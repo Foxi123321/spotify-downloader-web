@@ -2,28 +2,11 @@ services:
   - type: web
     name: spotify-downloader
     env: python
-    buildCommand: |
-      # Install system dependencies
-      apt-get update && apt-get install -y \
-        ffmpeg \
-        python3-pip \
-        python3-setuptools \
-        curl \
-        wget
-      
-      # Install latest yt-dlp directly
-      curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
-      chmod a+rx /usr/local/bin/yt-dlp
-      
-      # Install Python dependencies
-      pip install -r requirements.txt
-      
-      # Create necessary directories and files
-      mkdir -p ~/.cache/yt-dlp
-      touch ~/.cache/yt-dlp/cookies.txt
-      chmod -R 777 ~/.cache/yt-dlp
-    startCommand: gunicorn app:app --workers 1 --timeout 1800 --graceful-timeout 300 --keep-alive 5 --max-requests 5 --max-requests-jitter 5 --worker-tmp-dir /dev/shm
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
       - key: SPOTIPY_CLIENT_ID
         sync: false
       - key: SPOTIPY_CLIENT_SECRET
